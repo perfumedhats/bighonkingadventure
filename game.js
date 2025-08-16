@@ -6,16 +6,23 @@ class Slideshow {
             'images/fighter-bob.png', 
             'images/admiral2.png'
         ];
+        this.texts = [
+            'PRESS SPACE TO START',
+            'BOB: HOLY SHIT DOUG, THERE\'S ALIENS ATTACKING EARTH!',
+            'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE MARINE IN ORBIT! YOU MUST LAND ON THE ENEMY SHIP AND DISABLE THEIR WARP CORE'
+        ];
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');
         this.openingSlideshow = document.getElementById('opening-slideshow');
         this.gameCanvas = document.getElementById('gameCanvas');
         this.gameContainer = document.getElementById('game-container');
         this.backgroundMusic = document.getElementById('background-music');
+        this.typewriterText = document.getElementById('typewriter-text');
         
         this.setupInput();
         this.updateImage();
         this.startMusic();
+        this.startTypewriter();
     }
     
     setupInput() {
@@ -35,11 +42,27 @@ class Slideshow {
             this.startGame();
         } else {
             this.updateImage();
+            this.startTypewriter();
         }
     }
     
     updateImage() {
         this.viewport.src = this.images[this.currentIndex];
+    }
+    
+    startTypewriter() {
+        this.typewriterText.innerHTML = '';
+        this.typeText(this.texts[this.currentIndex], 0);
+    }
+    
+    typeText(text, index) {
+        if (index < text.length) {
+            this.typewriterText.innerHTML = text.substring(0, index + 1) + '<span class="typewriter-cursor"></span>';
+            setTimeout(() => this.typeText(text, index + 1), 50); // 50ms delay between characters
+        } else {
+            // Add blinking cursor at the end
+            this.typewriterText.innerHTML = text + '<span class="typewriter-cursor"></span>';
+        }
     }
     
     startMusic() {

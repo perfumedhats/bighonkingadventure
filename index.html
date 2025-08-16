@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atari Adventure</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
         body {
             margin: 0;
             padding: 0;
@@ -32,13 +34,41 @@
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
         }
+        
+        .typewriter-text {
+            position: absolute;
+            bottom: 80px;
+            left: 80px;
+            color: #fff;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 25px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            max-width: 90%;
+            line-height: 1.4;
+        }
+        
+        .typewriter-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 20px;
+            background-color: #ffff00;
+            animation: blink 1s infinite;
+            margin-left: 4px;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
     </style>
 </head>
 <body>
     <!-- The canvas starts hidden and is shown when the game is loaded -->
     <div id="game-container">
         <div id="opening-slideshow">
-            <img id="viewport"src="images/title.png" alt="Loading..." style="width: 100%; height: 100%; object-fit: cover;">           
+            <img id="viewport"src="images/title.png" alt="Loading..." style="width: 100%; height: 100%; object-fit: cover;">
+            <div id="typewriter-text" class="typewriter-text"></div>
         </div>       
         <canvas id="gameCanvas" style="display: none;"></canvas>
         
