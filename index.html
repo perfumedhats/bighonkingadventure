@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atari Adventure</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+        
+        #game-container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        canvas {
+            background-color: #000;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+            display: block;
+        }
+        img {
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+    </style>
+</head>
+<body>
+    <!-- The canvas starts hidden and is shown when the game is loaded -->
+    <div id="game-container">
+        <div id="opening-slideshow">
+            <img src="images/title.png" alt="Loading..." style="width: 100%; height: 100%; object-fit: cover;">           
+        </div>       
+        <canvas id="gameCanvas" style="display: none;"></canvas>
+
+    </div>
+    
+    
+    <script src="game.js"></script>
+</body>
+</html>
