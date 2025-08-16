@@ -11,9 +11,11 @@ class Slideshow {
         this.openingSlideshow = document.getElementById('opening-slideshow');
         this.gameCanvas = document.getElementById('gameCanvas');
         this.gameContainer = document.getElementById('game-container');
+        this.backgroundMusic = document.getElementById('background-music');
         
         this.setupInput();
         this.updateImage();
+        this.startMusic();
     }
     
     setupInput() {
@@ -40,7 +42,23 @@ class Slideshow {
         this.viewport.src = this.images[this.currentIndex];
     }
     
+    startMusic() {
+        // Start background music
+        this.backgroundMusic.play().catch(error => {
+            console.log('Audio autoplay failed:', error);
+            // Music will start on first user interaction
+        });
+    }
+    
+    stopMusic() {
+        this.backgroundMusic.pause();
+        this.backgroundMusic.currentTime = 0;
+    }
+    
     startGame() {
+        // Stop the background music
+        this.stopMusic();
+        
         // Hide slideshow and show game
         this.openingSlideshow.style.display = 'none';
         this.gameCanvas.style.display = 'block';

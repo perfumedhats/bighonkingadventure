@@ -1,0 +1,1 @@
+The title music is the battle music from chrono trigger
