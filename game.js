@@ -1,3 +1,55 @@
+// Slideshow system
+class Slideshow {
+    constructor() {
+        this.images = [
+            'images/title.png',
+            'images/fighter-bob.png', 
+            'images/admiral2.png'
+        ];
+        this.currentIndex = 0;
+        this.viewport = document.getElementById('viewport');
+        this.openingSlideshow = document.getElementById('opening-slideshow');
+        this.gameCanvas = document.getElementById('gameCanvas');
+        this.gameContainer = document.getElementById('game-container');
+        
+        this.setupInput();
+        this.updateImage();
+    }
+    
+    setupInput() {
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault(); // Prevent page scrolling
+                this.nextImage();
+            }
+        });
+    }
+    
+    nextImage() {
+        this.currentIndex++;
+        
+        if (this.currentIndex >= this.images.length) {
+            // Start the game
+            this.startGame();
+        } else {
+            this.updateImage();
+        }
+    }
+    
+    updateImage() {
+        this.viewport.src = this.images[this.currentIndex];
+    }
+    
+    startGame() {
+        // Hide slideshow and show game
+        this.openingSlideshow.style.display = 'none';
+        this.gameCanvas.style.display = 'block';
+        
+        // Start the game
+        new AdventureGame();
+    }
+}
+
 // Atari Adventure Game
 class AdventureGame {
     constructor() {
@@ -378,7 +430,7 @@ class AdventureGame {
     }
 }
 
-// Start the game when the page loads
+// Start the slideshow when the page loads
 window.addEventListener('load', () => {
-    new AdventureGame();
+    new Slideshow();
 });
