@@ -19,20 +19,28 @@ class Slideshow {
         this.backgroundMusic = document.getElementById('background-music');
         this.typewriterText = document.getElementById('typewriter-text');
         
+        // Bind the event handler once and store it
+        this.boundSlideshowKeydown = this.slideshowKeydown.bind(this);
+        
         this.setupInput();
         this.updateImage();
         this.startMusic();
         this.startTypewriter();
     }
     
-    setupInput() {
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
-                e.preventDefault(); // Prevent page scrolling
-                this.nextImage();
-            }
-        });
+    slideshowKeydown(e) {
+        if (e.code === 'Space') {
+            e.preventDefault(); // Prevent page scrolling
+            this.nextImage();
+        }
     }
+    
+    setupInput() {
+        // This gets removed when the game starts
+        document.addEventListener('keydown', this.boundSlideshowKeydown);
+    }
+
+    
     
     nextImage() {
         this.currentIndex++;
@@ -40,6 +48,7 @@ class Slideshow {
         if (this.currentIndex >= this.images.length) {
             // Start the game
             this.startGame();
+            document.removeEventListener('keydown', this.boundSlideshowKeydown);
         } else {
             this.updateImage();
             this.startTypewriter();
@@ -107,6 +116,12 @@ class AdventureGame {
         this.playerRoom = { x: 0, y: 0 };
         this.playerX = this.ROOM_SIZE / 2;
         this.playerY = this.ROOM_SIZE / 2;
+        
+        // Blaster system
+        this.blasters = [];
+        this.lastMoveDirection = { x: 0, y: 0 }; // Track last movement direction
+        this.BLASTER_SPEED = 3; // Pixels per frame
+        this.BLASTER_SIZE = 4;
         
         // Atari 2600 color palette (approximated for web)
         this.atariColors = [
@@ -242,6 +257,12 @@ class AdventureGame {
     setupInput() {
         document.addEventListener('keydown', (e) => {
             this.keys[e.key.toLowerCase()] = true;
+            
+            // Fire blaster on spacebar
+            if (e.code === 'Space') {
+                e.preventDefault(); // Prevent page scrolling
+                this.fireBlaster();
+            }
         });
         
         document.addEventListener('keyup', (e) => {
@@ -278,15 +299,19 @@ class AdventureGame {
         // Handle movement with 10px increments
         if (this.keys['w'] || this.keys['arrowup']) {
             newY -= moveIncrement;
+            this.lastMoveDirection = { x: 0, y: -1 };
         }
         if (this.keys['s'] || this.keys['arrowdown']) {
             newY += moveIncrement;
+            this.lastMoveDirection = { x: 0, y: 1 };
         }
         if (this.keys['a'] || this.keys['arrowleft']) {
             newX -= moveIncrement;
+            this.lastMoveDirection = { x: -1, y: 0 };
         }
         if (this.keys['d'] || this.keys['arrowright']) {
             newX += moveIncrement;
+            this.lastMoveDirection = { x: 1, y: 0 };
         }
         
         // Check wall collisions
@@ -297,6 +322,53 @@ class AdventureGame {
         
         // Check room transitions
         this.checkRoomTransition();
+    }
+    
+    fireBlaster() {
+        // Only fire if player has moved (has a direction)
+        if (this.lastMoveDirection.x === 0 && this.lastMoveDirection.y === 0) {
+            return; // Default to east if no movement yet
+        }
+        
+        const blaster = {
+            x: this.playerX,
+            y: this.playerY,
+            dx: this.lastMoveDirection.x * this.BLASTER_SPEED,
+            dy: this.lastMoveDirection.y * this.BLASTER_SPEED,
+            room: { x: this.playerRoom.x, y: this.playerRoom.y }
+        };
+        
+        this.blasters.push(blaster);
+    }
+    
+    updateBlasters() {
+        for (let i = this.blasters.length - 1; i >= 0; i--) {
+            const blaster = this.blasters[i];
+            
+            // Move blaster
+            blaster.x += blaster.dx;
+            blaster.y += blaster.dy;
+            
+            // Check if blaster is still in the same room
+            if (blaster.room.x !== this.playerRoom.x || blaster.room.y !== this.playerRoom.y) {
+                // Remove blaster if it's in a different room
+                this.blasters.splice(i, 1);
+                continue;
+            }
+            
+            // Check wall collision
+            if (!this.canMoveTo(blaster.x, blaster.y)) {
+                // Remove blaster when it hits a wall
+                this.blasters.splice(i, 1);
+                continue;
+            }
+            
+            // Remove blaster if it goes out of bounds
+            if (blaster.x < 0 || blaster.x > this.ROOM_SIZE || 
+                blaster.y < 0 || blaster.y > this.ROOM_SIZE) {
+                this.blasters.splice(i, 1);
+            }
+        }
     }
     
     canMoveTo(x, y) {
@@ -407,6 +479,9 @@ class AdventureGame {
         
         // Draw player
         this.drawPlayer();
+        
+        // Draw blasters
+        this.drawBlasters();
     }
     
     drawWalls(roomKey, roomColor) {
@@ -464,8 +539,21 @@ class AdventureGame {
         );
     }
     
+    drawBlasters() {
+        this.ctx.fillStyle = '#FF0000'; // Red blasters
+        for (const blaster of this.blasters) {
+            this.ctx.fillRect(
+                blaster.x - this.BLASTER_SIZE/2,
+                blaster.y - this.BLASTER_SIZE/2,
+                this.BLASTER_SIZE,
+                this.BLASTER_SIZE
+            );
+        }
+    }
+    
     gameLoop() {
         this.updatePlayer();
+        this.updateBlasters();
         this.drawRoom();
         requestAnimationFrame(() => this.gameLoop());
     }
