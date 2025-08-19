@@ -22,7 +22,7 @@ class Slideshow {
             [   "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
                 "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
             ].join('\n'),
-            [   "BOB: CAREFUL DOUG, THAT THING HITS"
+            [   "BOB: CAREFUL DOUG, THAT THING HITS",
                 "LIKE A LOADED GOAT"].join('\n'),
         ];
         this.currentIndex = 0;
