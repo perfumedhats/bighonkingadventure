@@ -4,12 +4,26 @@ class Slideshow {
         this.images = [
             'images/title.png',
             'images/fighter-bob.png', 
-            'images/admiral2.png'
+            'images/admiral2.png',
+            'images/doug-bar.png',
+            'images/big-honking-gun.png',
+            'images/fighter-bob-2.png'
         ];
         this.texts = [
             'PRESS SPACE TO START',
-            'BOB: HOLY SHIT DOUG, THERE\'S ALIENS ATTACKING EARTH!',
-            'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE MARINE IN ORBIT! YOU MUST LAND ON THE ENEMY SHIP AND DISABLE THEIR WARP CORE'
+            [   'BOB: HOLY SHIT DOUG, THERE\'S ALIENS',
+                'ATTACKING EARTH!'].join('\n'),
+            [   'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE',
+                'PILOT IN ORBIT! YOU MUST LAND ON THE',
+                'ENEMY SHIP AND DISABLE THEIR WARP CORE'
+            ].join('\n'),
+            [   'YOU CAN RECOVER HEALTH BY EATING',
+                'DELICIOUS DOUG BARS'].join('\n'),
+            [   "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
+                "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
+            ].join('\n'),
+            [   "BOB: CAREFUL DOUG, THAT THING HITS"
+                "LIKE A LOADED GOAT"].join('\n'),
         ];
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');
@@ -121,7 +135,7 @@ class AdventureGame {
         this.blasters = [];
         this.lastMoveDirection = { x: 0, y: 0 }; // Track last movement direction
         this.BLASTER_SPEED = 3; // Pixels per frame
-        this.BLASTER_SIZE = 4;
+        this.BLASTER_SIZE = 10;
         
         // Atari 2600 color palette (approximated for web)
         this.atariColors = [
