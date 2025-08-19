@@ -1,119 +1,3 @@
-// Slideshow system
-class Slideshow {
-    constructor() {
-        this.images = [
-            'images/title.png',
-            'images/fighter-bob.png', 
-            'images/admiral2.png',
-            'images/doug-bar.png',
-            'images/big-honking-gun.png',
-            'images/fighter-bob-2.png'
-        ];
-        this.texts = [
-            'PRESS SPACE TO START',
-            [   'BOB: HOLY SHIT DOUG, THERE\'S ALIENS',
-                'ATTACKING EARTH!'].join('\n'),
-            [   'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE',
-                'PILOT IN ORBIT! YOU MUST LAND ON THE',
-                'ENEMY SHIP AND DISABLE THEIR WARP CORE'
-            ].join('\n'),
-            [   'YOU CAN RECOVER HEALTH BY EATING',
-                'DELICIOUS DOUG BARS'].join('\n'),
-            [   "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
-                "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
-            ].join('\n'),
-            [   "BOB: CAREFUL DOUG, THAT THING HITS",
-                "LIKE A LOADED GOAT"].join('\n'),
-        ];
-        this.currentIndex = 0;
-        this.viewport = document.getElementById('viewport');
-        this.openingSlideshow = document.getElementById('opening-slideshow');
-        this.gameCanvas = document.getElementById('gameCanvas');
-        this.gameContainer = document.getElementById('game-container');
-        this.backgroundMusic = document.getElementById('background-music');
-        this.typewriterText = document.getElementById('typewriter-text');
-        
-        // Bind the event handler once and store it
-        this.boundSlideshowKeydown = this.slideshowKeydown.bind(this);
-        
-        this.setupInput();
-        this.updateImage();
-        this.startMusic();
-        this.startTypewriter();
-    }
-    
-    slideshowKeydown(e) {
-        if (e.code === 'Space') {
-            e.preventDefault(); // Prevent page scrolling
-            this.nextImage();
-        }
-    }
-    
-    setupInput() {
-        // This gets removed when the game starts
-        document.addEventListener('keydown', this.boundSlideshowKeydown);
-    }
-
-    
-    
-    nextImage() {
-        this.currentIndex++;
-        
-        if (this.currentIndex >= this.images.length) {
-            // Start the game
-            this.startGame();
-            document.removeEventListener('keydown', this.boundSlideshowKeydown);
-        } else {
-            this.updateImage();
-            this.startTypewriter();
-        }
-    }
-    
-    updateImage() {
-        this.viewport.src = this.images[this.currentIndex];
-    }
-    
-    startTypewriter() {
-        this.typewriterText.innerHTML = '';
-        this.typeText(this.texts[this.currentIndex], 0);
-    }
-    
-    typeText(text, index) {
-        if (index < text.length) {
-            this.typewriterText.innerHTML = text.substring(0, index + 1) + '<span class="typewriter-cursor"></span>';
-            setTimeout(() => this.typeText(text, index + 1), 50); // 50ms delay between characters
-        } else {
-            // Add blinking cursor at the end
-            this.typewriterText.innerHTML = text + '<span class="typewriter-cursor"></span>';
-        }
-    }
-    
-    startMusic() {
-        // Start background music
-        this.backgroundMusic.play().catch(error => {
-            console.log('Audio autoplay failed:', error);
-            // Music will start on first user interaction
-        });
-    }
-    
-    stopMusic() {
-        this.backgroundMusic.pause();
-        this.backgroundMusic.currentTime = 0;
-    }
-    
-    startGame() {
-        // Stop the background music
-        this.stopMusic();
-        
-        // Hide slideshow and show game
-        this.openingSlideshow.style.display = 'none';
-        this.gameCanvas.style.display = 'block';
-        
-        // Start the game
-        new AdventureGame();
-    }
-}
-
 // Atari Adventure Game
 class AdventureGame {
     constructor() {
@@ -133,72 +17,12 @@ class AdventureGame {
         
         // Blaster system
         this.blasters = [];
-        this.lastMoveDirection = { x: 0, y: 0 }; // Track last movement direction
+        this.lastMoveDirection = { x: 1, y: 0 }; // Track last movement direction
         this.BLASTER_SPEED = 3; // Pixels per frame
         this.BLASTER_SIZE = 10;
         
-        // Atari 2600 color palette (approximated for web)
-        this.atariColors = [
-            '#000000', // Black
-            '#FFFFFF', // White
-            '#FF0000', // Red
-            '#00FF00', // Green
-            '#0000FF', // Blue
-            '#FFFF00', // Yellow
-            '#FF00FF', // Magenta
-            '#00FFFF', // Cyan
-            '#FF8000', // Orange
-            '#8000FF', // Purple
-            '#008000', // Dark Green
-            '#800000', // Dark Red
-            '#000080', // Dark Blue
-            '#808000', // Olive
-            '#800080', // Dark Magenta
-            '#008080', // Dark Cyan
-            '#FF8080', // Light Red
-            '#80FF80', // Light Green
-            '#8080FF', // Light Blue
-            '#FFFF80', // Light Yellow
-            '#FF80FF', // Light Magenta
-            '#80FFFF', // Light Cyan
-            '#FFC080', // Light Orange
-            '#C080FF', // Light Purple
-            '#80C080', // Light Green
-            '#C08080', // Light Red
-            '#8080C0', // Light Blue
-            '#C0C080', // Light Olive
-            '#C080C0', // Light Magenta
-            '#80C0C0', // Light Cyan
-            '#FFE0C0', // Very Light Orange
-            '#E0C0FF', // Very Light Purple
-            '#C0E0C0', // Very Light Green
-            '#E0C0E0', // Very Light Magenta
-            '#C0E0E0', // Very Light Cyan
-            '#FFFFC0', // Very Light Yellow
-            '#FFC0FF', // Very Light Magenta
-            '#C0FFFF', // Very Light Cyan
-            '#FFE0E0', // Very Light Red
-            '#E0FFE0', // Very Light Green
-            '#E0E0FF', // Very Light Blue
-            '#E0E0E0', // Very Light Gray
-            '#C0C0C0', // Light Gray
-            '#808080', // Gray
-            '#404040', // Dark Gray
-            '#202020', // Very Dark Gray
-            '#101010', // Almost Black
-            '#FF4000', // Bright Orange
-            '#FF0040', // Bright Pink
-            '#40FF00', // Bright Lime
-            '#00FF40', // Bright Green
-            '#0040FF', // Bright Blue
-            '#4000FF', // Bright Purple
-            '#FF8000', // Orange
-            '#FF0080', // Pink
-            '#80FF00', // Lime
-            '#00FF80', // Green
-            '#0080FF', // Blue
-            '#8000FF'  // Purple
-        ];
+        // Use external Atari color palette
+        this.atariColors = AtariColors;
         
         // Room connections - hardcoded map
         // Each room can connect to up to 4 adjacent rooms (north, south, east, west)
@@ -572,8 +396,3 @@ class AdventureGame {
         requestAnimationFrame(() => this.gameLoop());
     }
 }
-
-// Start the slideshow when the page loads
-window.addEventListener('load', () => {
-    new Slideshow();
-});
