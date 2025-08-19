@@ -21,6 +21,13 @@ class Slideshow {
             ].join('\n')
         },
         {
+            image: 'images/aliens.png',
+            text: [
+                "BE CAREFUL DOUG, THESE ALIENS",
+                "ARE AS DEADLY AS THEY ARE UGLY"
+            ].join('\n')
+        },
+        {
             image: 'images/doug-bar.png',
             text: [
                 'YOU CAN RECOVER HEALTH BY EATING',
@@ -41,7 +48,8 @@ class Slideshow {
                 "LIKE A LOADED GOAT"
             ].join('\n')
         }
-    ]
+    ];
+        this.slides = [this.slides[0]];
         this.writingText = true;
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');

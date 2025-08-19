@@ -180,16 +180,16 @@ class AdventureGame {
         let deltaX = 0;
         let deltaY = 0;
         
-        if (this.keys['w'] || this.keys['arrowup']) {
+        if (this.keys['w']) {
             deltaY -= 1;
         }
-        if (this.keys['s'] || this.keys['arrowdown']) {
+        if (this.keys['s']) {
             deltaY += 1;
         }
-        if (this.keys['a'] || this.keys['arrowleft']) {
+        if (this.keys['a']) {
             deltaX -= 1;
         }
-        if (this.keys['d'] || this.keys['arrowright']) {
+        if (this.keys['d']) {
             deltaX += 1
         }
 
