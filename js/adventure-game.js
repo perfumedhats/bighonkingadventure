@@ -21,6 +21,10 @@ class AdventureGame {
         this.BLASTER_SPEED = 3; // Pixels per frame
         this.BLASTER_SIZE = 10;
         
+        // Alien system
+        this.aliens = {}; // Store aliens by room key
+        this.currentRoomAlien = null;
+        
         // Room connections - hardcoded map
         // Each room can connect to up to 4 adjacent rooms (north, south, east, west)
         this.roomConnections = this.generateRoomConnections();
@@ -31,6 +35,9 @@ class AdventureGame {
         
         // Handle window resize
         this.setupResize();
+        
+        // Initialize current room alien
+        this.loadCurrentRoomAlien();
         
         // Game loop
         this.gameLoop();
@@ -87,6 +94,42 @@ class AdventureGame {
         }
         
         return connections;
+    }
+    
+    loadCurrentRoomAlien() {
+        const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
+        
+        // Create alien if it doesn't exist for this room
+        if (!this.aliens[roomKey]) {
+            this.aliens[roomKey] = createAlienForRoom(roomKey, this.ROOM_SIZE, this.WALL_THICKNESS);
+        }
+        
+        this.currentRoomAlien = this.aliens[roomKey];
+    }
+    
+    updateAliens() {
+        if (this.currentRoomAlien) {
+            this.currentRoomAlien.update(this.ROOM_SIZE, this.WALL_THICKNESS);
+            
+            // Check collision with player
+            if (this.currentRoomAlien.checkCollision(this.playerX, this.playerY, this.PLAYER_SIZE)) {
+                // Reset player to center of room (or handle damage)
+                this.playerX = this.ROOM_SIZE / 2;
+                this.playerY = this.ROOM_SIZE / 2;
+            }
+            
+            // Check collision with blasters
+            for (let i = this.blasters.length - 1; i >= 0; i--) {
+                const blaster = this.blasters[i];
+                if (this.currentRoomAlien.checkCollision(blaster.x, blaster.y, this.BLASTER_SIZE)) {
+                    // Remove blaster and alien
+                    this.blasters.splice(i, 1);
+                    this.currentRoomAlien = null;
+                    delete this.aliens[`${this.playerRoom.x},${this.playerRoom.y}`];
+                    break;
+                }
+            }
+        }
     }
     
     setupInput() {
@@ -277,6 +320,8 @@ class AdventureGame {
     checkRoomTransition() {
         const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
         const connections = this.roomConnections[roomKey];
+        const oldRoomX = this.playerRoom.x;
+        const oldRoomY = this.playerRoom.y;
         
         // Check if player is at a door and should transition
         if (this.playerX < this.WALL_THICKNESS && connections.includes('west')) {
@@ -296,6 +341,11 @@ class AdventureGame {
             this.playerRoom.y++;
             this.playerY = this.WALL_THICKNESS + this.PLAYER_SIZE/2;
         }
+        
+        // If room changed, load the alien for the new room
+        if (oldRoomX !== this.playerRoom.x || oldRoomY !== this.playerRoom.y) {
+            this.loadCurrentRoomAlien();
+        }
     }
     
 
@@ -311,6 +361,11 @@ class AdventureGame {
         
         // Draw walls
         this.drawWalls(roomKey, roomColor);
+        
+        // Draw aliens
+        if (this.currentRoomAlien) {
+            this.currentRoomAlien.draw(this.ctx);
+        }
         
         // Draw player
         this.drawPlayer();
@@ -389,6 +444,7 @@ class AdventureGame {
     gameLoop() {
         this.updatePlayer();
         this.updateBlasters();
+        this.updateAliens();
         this.drawRoom();
         requestAnimationFrame(() => this.gameLoop());
     }

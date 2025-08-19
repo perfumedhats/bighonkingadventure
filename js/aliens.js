@@ -1,0 +1,177 @@
+// Alien types and behaviors for the adventure game
+class Alien {
+    constructor(x, y, roomKey, type) {
+        this.x = x;
+        this.y = y;
+        this.roomKey = roomKey;
+        this.type = type;
+        this.size = 16;
+        this.speed = 1;
+        this.direction = { x: 0, y: 0 };
+        this.changeDirectionTimer = 0;
+        this.changeDirectionInterval = 60 + Math.random() * 120; // 1-3 seconds at 60fps
+        
+        // Set initial random direction
+        this.setRandomDirection();
+        
+        // Type-specific properties
+        this.setupTypeProperties();
+    }
+    
+    setupTypeProperties() {
+        switch(this.type) {
+            case 'bat':
+                this.color = '#8000FF'; // Purple
+                this.speed = 1.5;
+                this.size = 12;
+                break;
+            case 'dragon':
+                this.color = '#FF0000'; // Red
+                this.speed = 0.8;
+                this.size = 20;
+                break;
+            case 'snake':
+                this.color = '#00FF00'; // Green
+                this.speed = 1.2;
+                this.size = 14;
+                break;
+        }
+    }
+    
+    setRandomDirection() {
+        const directions = [
+            { x: 0, y: -1 }, // North
+            { x: 1, y: 0 },  // East
+            { x: 0, y: 1 },  // South
+            { x: -1, y: 0 }, // West
+            { x: 0, y: 0 }   // Stop occasionally
+        ];
+        
+        this.direction = directions[Math.floor(Math.random() * directions.length)];
+    }
+    
+    update(roomSize, wallThickness) {
+        // Change direction periodically
+        this.changeDirectionTimer++;
+        if (this.changeDirectionTimer >= this.changeDirectionInterval) {
+            this.setRandomDirection();
+            this.changeDirectionTimer = 0;
+            this.changeDirectionInterval = 60 + Math.random() * 120;
+        }
+        
+        // Move alien
+        const newX = this.x + this.direction.x * this.speed;
+        const newY = this.y + this.direction.y * this.speed;
+        
+        // Check boundaries and bounce off walls
+        const margin = this.size / 2;
+        if (newX < wallThickness + margin || newX > roomSize - wallThickness - margin) {
+            this.direction.x *= -1;
+        } else {
+            this.x = newX;
+        }
+        
+        if (newY < wallThickness + margin || newY > roomSize - wallThickness - margin) {
+            this.direction.y *= -1;
+        } else {
+            this.y = newY;
+        }
+        
+        // Keep alien in bounds
+        this.x = Math.max(wallThickness + margin, Math.min(this.x, roomSize - wallThickness - margin));
+        this.y = Math.max(wallThickness + margin, Math.min(this.y, roomSize - wallThickness - margin));
+    }
+    
+    draw(ctx) {
+        ctx.fillStyle = this.color;
+        
+        switch(this.type) {
+            case 'bat':
+                this.drawBat(ctx);
+                break;
+            case 'dragon':
+                this.drawDragon(ctx);
+                break;
+            case 'snake':
+                this.drawSnake(ctx);
+                break;
+        }
+    }
+    
+    drawBat(ctx) {
+        // Simple bat shape - diamond with wing extensions
+        const halfSize = this.size / 2;
+        
+        // Main body (diamond)
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y - halfSize);
+        ctx.lineTo(this.x + halfSize, this.y);
+        ctx.lineTo(this.x, this.y + halfSize);
+        ctx.lineTo(this.x - halfSize, this.y);
+        ctx.closePath();
+        ctx.fill();
+        
+        // Wings
+        ctx.fillRect(this.x - halfSize - 4, this.y - 3, 8, 6);
+        ctx.fillRect(this.x + halfSize - 4, this.y - 3, 8, 6);
+    }
+    
+    drawDragon(ctx) {
+        // Dragon shape - larger rectangle with spikes
+        const halfSize = this.size / 2;
+        
+        // Main body
+        ctx.fillRect(this.x - halfSize, this.y - halfSize, this.size, this.size);
+        
+        // Spikes/horns
+        ctx.fillRect(this.x - halfSize + 2, this.y - halfSize - 4, 4, 4);
+        ctx.fillRect(this.x + halfSize - 6, this.y - halfSize - 4, 4, 4);
+        
+        // Tail
+        ctx.fillRect(this.x + halfSize, this.y - 2, 6, 4);
+    }
+    
+    drawSnake(ctx) {
+        // Snake shape - segmented rectangles
+        const segmentSize = 4;
+        const segments = Math.floor(this.size / segmentSize);
+        
+        for (let i = 0; i < segments; i++) {
+            const offsetX = (i - segments/2) * segmentSize;
+            ctx.fillRect(
+                this.x + offsetX - segmentSize/2,
+                this.y - segmentSize/2,
+                segmentSize,
+                segmentSize
+            );
+        }
+    }
+    
+    checkCollision(otherX, otherY, otherSize) {
+        const dx = this.x - otherX;
+        const dy = this.y - otherY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        return distance < (this.size + otherSize) / 2;
+    }
+}
+
+// Alien management utilities
+const AlienTypes = ['bat', 'dragon', 'snake'];
+
+function getAlienTypeForRoom(roomX, roomY) {
+    // Deterministic alien type based on room coordinates
+    const roomIndex = (roomX * 7 + roomY * 11) % 3; // Use prime numbers for better distribution
+    return AlienTypes[roomIndex];
+}
+
+function createAlienForRoom(roomKey, roomSize, wallThickness) {
+    const [roomX, roomY] = roomKey.split(',').map(Number);
+    const alienType = getAlienTypeForRoom(roomX, roomY);
+    
+    // Random position within room bounds
+    const margin = 30;
+    const x = wallThickness + margin + Math.random() * (roomSize - 2 * (wallThickness + margin));
+    const y = wallThickness + margin + Math.random() * (roomSize - 2 * (wallThickness + margin));
+    
+    return new Alien(x, y, roomKey, alienType);
+}
