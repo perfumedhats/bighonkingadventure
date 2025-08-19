@@ -21,9 +21,6 @@ class AdventureGame {
         this.BLASTER_SPEED = 3; // Pixels per frame
         this.BLASTER_SIZE = 10;
         
-        // Use external Atari color palette
-        this.atariColors = AtariColors;
-        
         // Room connections - hardcoded map
         // Each room can connect to up to 4 adjacent rooms (north, south, east, west)
         this.roomConnections = this.generateRoomConnections();
@@ -305,8 +302,8 @@ class AdventureGame {
     
     drawRoom() {
         const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
-        const roomIndex = (this.playerRoom.x + this.playerRoom.y * 10) % this.atariColors.length;
-        const roomColor = this.atariColors[roomIndex];
+        const roomIndex = (this.playerRoom.x + this.playerRoom.y * 10) % AtariColors.length;
+        const roomColor = AtariColors[roomIndex];
         
         // Fill room with grey background
         this.ctx.fillStyle = '#444';
