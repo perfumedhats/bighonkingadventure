@@ -25,6 +25,9 @@ class AdventureGame {
         this.aliens = {}; // Store aliens by room key
         this.currentRoomAlien = null;
         
+        // Score system
+        this.score = 0;
+        
         // Room connections - hardcoded map
         // Each room can connect to up to 4 adjacent rooms (north, south, east, west)
         this.roomConnections = this.generateRoomConnections();
@@ -128,15 +131,18 @@ class AdventureGame {
             for (let i = this.blasters.length - 1; i >= 0; i--) {
                 const blaster = this.blasters[i];
                 if (this.currentRoomAlien.checkCollision(blaster.x, blaster.y, this.BLASTER_SIZE)) {
-                    // Remove blaster and alien
+                    // Remove blaster and alien, award points
                     this.blasters.splice(i, 1);
                     this.currentRoomAlien = null;
                     delete this.aliens[`${this.playerRoom.x},${this.playerRoom.y}`];
+                    this.score += 50;
                     break;
                 }
             }
         }
     }
+    
+
     
     setupInput() {
         document.addEventListener('keydown', (e) => {
@@ -377,6 +383,9 @@ class AdventureGame {
         
         // Draw blasters
         this.drawBlasters();
+        
+        // Draw score
+        ScoreDisplay.drawScore(this.ctx, this.score);
     }
     
     drawWalls(roomKey, roomColor) {
