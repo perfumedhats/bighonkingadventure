@@ -1,30 +1,47 @@
 // Slideshow system
 class Slideshow {
     constructor() {
-        this.images = [
-            'images/title.png',
-            'images/fighter-bob.png', 
-            'images/admiral2.png',
-            'images/doug-bar.png',
-            'images/big-honking-gun.png',
-            'images/fighter-bob-2.png'
-        ];
-        this.texts = [
-            'PRESS SPACE TO START',
-            [   'BOB: HOLY SHIT DOUG, THERE\'S ALIENS',
-                'ATTACKING EARTH!'].join('\n'),
-            [   'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE',
+        this.slides = [{
+            image: 'images/title.png',
+            text: 'PRESS SPACE TO START'
+        },
+        {
+            image: 'images/fighter-bob.png',
+            text: [
+                'BOB: HOLY SHIT DOUG, THERE\'S ALIENS',
+                'ATTACKING EARTH!'
+            ].join('\n')
+        },
+        {
+            image: 'images/admiral2.png',
+            text: [
+                'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE',
                 'PILOT IN ORBIT! YOU MUST LAND ON THE',
                 'ENEMY SHIP AND DISABLE THEIR WARP CORE'
-            ].join('\n'),
-            [   'YOU CAN RECOVER HEALTH BY EATING',
-                'DELICIOUS DOUG BARS'].join('\n'),
-            [   "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
+            ].join('\n')
+        },
+        {
+            image: 'images/doug-bar.png',
+            text: [
+                'YOU CAN RECOVER HEALTH BY EATING',
+                'DELICIOUS DOUG BARS'
+            ].join('\n')
+        },
+        {
+            image: 'images/big-honking-gun.png',
+            text: [
+                "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
                 "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
-            ].join('\n'),
-            [   "BOB: CAREFUL DOUG, THAT THING HITS",
-                "LIKE A LOADED GOAT"].join('\n'),
-        ];
+            ].join('\n')
+        },
+        {
+            image: 'images/fighter-bob-2.png',
+            text: [
+                "BOB: CAREFUL DOUG, THAT THING HITS",
+                "LIKE A LOADED GOAT"
+            ].join('\n')
+        }
+    ]
         this.writingText = true;
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');
@@ -59,10 +76,10 @@ class Slideshow {
         if (this.writingText) {
             return;
         }
-        
+
         this.currentIndex++;
         
-        if (this.currentIndex >= this.images.length) {
+        if (this.currentIndex >= this.slides.length) {
             // Start the game
             this.startGame();
             document.removeEventListener('keydown', this.boundSlideshowKeydown);
@@ -73,12 +90,12 @@ class Slideshow {
     }
     
     updateImage() {
-        this.viewport.src = this.images[this.currentIndex];
+        this.viewport.src = this.slides[this.currentIndex].image;
     }
     
     startTypewriter() {
         this.typewriterText.innerHTML = '';
-        this.typeText(this.texts[this.currentIndex], 0);
+        this.typeText(this.slides[this.currentIndex].text, 0);
     }
     
     typeText(text, index) {
