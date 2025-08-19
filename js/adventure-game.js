@@ -25,8 +25,15 @@ class AdventureGame {
         this.aliens = {}; // Store aliens by room key
         this.currentRoomAlien = null;
         
+        // Doug Bar system
+        this.dougBars = {}; // Store doug bars by room key
+        this.currentRoomDougBar = null;
+        
         // Score system
         this.score = 0;
+        
+        // Sound system
+        this.soundManager = new SoundManager();
         
         // Room connections - hardcoded map
         // Each room can connect to up to 4 adjacent rooms (north, south, east, west)
@@ -39,8 +46,9 @@ class AdventureGame {
         // Handle window resize
         this.setupResize();
         
-        // Initialize current room alien
+        // Initialize current room alien and Doug Bar
         this.loadCurrentRoomAlien();
+        this.loadCurrentRoomDougBar();
         
         // Frame rate control
         this.targetFPS = 30;
@@ -114,6 +122,33 @@ class AdventureGame {
         }
         
         this.currentRoomAlien = this.aliens[roomKey];
+    }
+    
+    loadCurrentRoomDougBar() {
+        const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
+        
+        // Create Doug Bar if it doesn't exist for this room and passes probability check
+        if (!this.dougBars.hasOwnProperty(roomKey)) {
+            // 1/3 chance of having a Doug Bar
+            if (Math.random() < 1/3) {
+                this.dougBars[roomKey] = createDougBarForRoom(roomKey, this.ROOM_SIZE, this.WALL_THICKNESS);
+            } else {
+                this.dougBars[roomKey] = null;
+            }
+        }
+        
+        this.currentRoomDougBar = this.dougBars[roomKey];
+    }
+    
+    updateDougBars() {
+        if (this.currentRoomDougBar && !this.currentRoomDougBar.collected) {
+            // Check collision with player
+            if (this.currentRoomDougBar.checkCollision(this.playerX, this.playerY, this.PLAYER_SIZE)) {
+                this.currentRoomDougBar.collected = true;
+                this.score += 25; // Award points for collecting Doug Bar
+                this.soundManager.play('dougBarCollect');
+            }
+        }
     }
     
     updateAliens() {
@@ -353,9 +388,10 @@ class AdventureGame {
             this.playerY = this.WALL_THICKNESS + this.PLAYER_SIZE/2;
         }
         
-        // If room changed, load the alien for the new room
+        // If room changed, load the alien and Doug Bar for the new room
         if (oldRoomX !== this.playerRoom.x || oldRoomY !== this.playerRoom.y) {
             this.loadCurrentRoomAlien();
+            this.loadCurrentRoomDougBar();
         }
     }
     
@@ -372,6 +408,11 @@ class AdventureGame {
         
         // Draw walls
         this.drawWalls(roomKey, roomColor);
+        
+        // Draw Doug Bar
+        if (this.currentRoomDougBar && !this.currentRoomDougBar.collected) {
+            this.currentRoomDougBar.draw(this.ctx);
+        }
         
         // Draw aliens
         if (this.currentRoomAlien) {
@@ -465,6 +506,7 @@ class AdventureGame {
             this.updatePlayer();
             this.updateBlasters();
             this.updateAliens();
+            this.updateDougBars();
             this.accumulator -= this.frameTime;
         }
         
