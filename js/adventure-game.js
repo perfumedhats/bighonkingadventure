@@ -18,7 +18,7 @@ class AdventureGame {
         // Blaster system
         this.blasters = [];
         this.lastMoveDirection = { x: 1, y: 0 }; // Track last movement direction
-        this.BLASTER_SPEED = 3; // Pixels per frame
+        this.BLASTER_SPEED = 5; // Pixels per frame at 30fps (150 pixels/second)
         this.BLASTER_SIZE = 10;
         
         // Alien system
@@ -38,6 +38,12 @@ class AdventureGame {
         
         // Initialize current room alien
         this.loadCurrentRoomAlien();
+        
+        // Frame rate control
+        this.targetFPS = 30;
+        this.frameTime = 1000 / this.targetFPS; // 33.33ms per frame
+        this.lastTime = 0;
+        this.accumulator = 0;
         
         // Game loop
         this.gameLoop();
@@ -170,11 +176,11 @@ class AdventureGame {
     }
     
     updatePlayer() {
-        const moveIncrement = 10;
+        const moveIncrement = 4;
         let newX = this.playerX;
         let newY = this.playerY;
         
-        // Handle movement with 10px increments
+        // Handle movement with controlled increments
         if (this.keys['w'] || this.keys['arrowup']) {
             newY -= moveIncrement;
             this.lastMoveDirection = { x: 0, y: -1 };
@@ -441,11 +447,21 @@ class AdventureGame {
         }
     }
     
-    gameLoop() {
-        this.updatePlayer();
-        this.updateBlasters();
-        this.updateAliens();
+    gameLoop(currentTime = 0) {
+        const deltaTime = currentTime - this.lastTime;
+        this.lastTime = currentTime;
+        this.accumulator += deltaTime;
+        
+        // Update at fixed timestep (30 FPS)
+        while (this.accumulator >= this.frameTime) {
+            this.updatePlayer();
+            this.updateBlasters();
+            this.updateAliens();
+            this.accumulator -= this.frameTime;
+        }
+        
+        // Render every frame
         this.drawRoom();
-        requestAnimationFrame(() => this.gameLoop());
+        requestAnimationFrame((time) => this.gameLoop(time));
     }
 }

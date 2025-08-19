@@ -9,7 +9,7 @@ class Alien {
         this.speed = 1;
         this.direction = { x: 0, y: 0 };
         this.changeDirectionTimer = 0;
-        this.changeDirectionInterval = 60 + Math.random() * 120; // 1-3 seconds at 60fps
+        this.changeDirectionInterval = 30 + Math.random() * 60; // 1-3 seconds at 30fps
         
         // Set initial random direction
         this.setRandomDirection();
@@ -22,17 +22,17 @@ class Alien {
         switch(this.type) {
             case 'bat':
                 this.color = '#8000FF'; // Purple
-                this.speed = 1.5;
+                this.speed = 1.5; // 45 pixels/second at 30fps
                 this.size = 12;
                 break;
             case 'dragon':
                 this.color = '#FF0000'; // Red
-                this.speed = 0.8;
+                this.speed = 0.8; // 24 pixels/second at 30fps
                 this.size = 20;
                 break;
             case 'snake':
                 this.color = '#00FF00'; // Green
-                this.speed = 1.2;
+                this.speed = 1.2; // 36 pixels/second at 30fps
                 this.size = 14;
                 break;
         }
@@ -56,7 +56,7 @@ class Alien {
         if (this.changeDirectionTimer >= this.changeDirectionInterval) {
             this.setRandomDirection();
             this.changeDirectionTimer = 0;
-            this.changeDirectionInterval = 60 + Math.random() * 120;
+            this.changeDirectionInterval = 30 + Math.random() * 60; // 1-3 seconds at 30fps
         }
         
         // Move alien
