@@ -177,43 +177,42 @@ class AdventureGame {
     
     updatePlayer() {
         const moveIncrement = 4;
-        let newX = this.playerX;
-        let newY = this.playerY;
+        let deltaX = 0;
+        let deltaY = 0;
         
-        // Handle movement with controlled increments
         if (this.keys['w'] || this.keys['arrowup']) {
-            newY -= moveIncrement;
-            this.lastMoveDirection = { x: 0, y: -1 };
+            deltaY -= 1;
         }
         if (this.keys['s'] || this.keys['arrowdown']) {
-            newY += moveIncrement;
-            this.lastMoveDirection = { x: 0, y: 1 };
+            deltaY += 1;
         }
         if (this.keys['a'] || this.keys['arrowleft']) {
-            newX -= moveIncrement;
-            this.lastMoveDirection = { x: -1, y: 0 };
+            deltaX -= 1;
         }
         if (this.keys['d'] || this.keys['arrowright']) {
-            newX += moveIncrement;
-            this.lastMoveDirection = { x: 1, y: 0 };
+            deltaX += 1
         }
-        
+
+        if (deltaX || deltaY) {
+            this.lastMoveDirection = {x: deltaX, y: deltaY};
+        }
+
         // Check wall collisions
+        let newX = this.playerX + deltaX * moveIncrement;
+        let newY = this.playerY + deltaY * moveIncrement;
         if (this.canMoveTo(newX, newY)) {
             this.playerX = newX;
             this.playerY = newY;
         }
         
-        // Check room transitions
         this.checkRoomTransition();
     }
     
     fireBlaster() {
         // Only fire if player has moved (has a direction)
-        if (this.lastMoveDirection.x === 0 && this.lastMoveDirection.y === 0) {
-            return; // Default to east if no movement yet
+        if (this.blasters.length >= 2) {
+            return;
         }
-        
         const blaster = {
             x: this.playerX,
             y: this.playerY,
