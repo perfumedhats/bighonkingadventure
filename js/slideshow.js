@@ -25,6 +25,7 @@ class Slideshow {
             [   "BOB: CAREFUL DOUG, THAT THING HITS",
                 "LIKE A LOADED GOAT"].join('\n'),
         ];
+        this.writingText = true;
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');
         this.openingSlideshow = document.getElementById('opening-slideshow');
@@ -54,9 +55,11 @@ class Slideshow {
         document.addEventListener('keydown', this.boundSlideshowKeydown);
     }
 
-    
-    
     nextImage() {
+        if (this.writingText) {
+            return;
+        }
+        
         this.currentIndex++;
         
         if (this.currentIndex >= this.images.length) {
@@ -80,10 +83,12 @@ class Slideshow {
     
     typeText(text, index) {
         if (index < text.length) {
+            this.writingText = true;
             this.typewriterText.innerHTML = text.substring(0, index + 1) + '<span class="typewriter-cursor"></span>';
             setTimeout(() => this.typeText(text, index + 1), 50); // 50ms delay between characters
         } else {
             // Add blinking cursor at the end
+            this.writingText = false;
             this.typewriterText.innerHTML = text + '<span class="typewriter-cursor"></span>';
         }
     }
