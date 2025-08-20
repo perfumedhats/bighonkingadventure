@@ -2,6 +2,7 @@
 class Slideshow {
     constructor() {
         this.isFinale = false;
+        this.preloadedImages = new Map(); // Store preloaded images
         this.slidesVictory = [
             {
                 image: 'images/fighter-bob.png',
@@ -130,11 +131,30 @@ class Slideshow {
         this.boundSlideshowKeydown = this.slideshowKeydown.bind(this);
         
         this.setupInput();
+        this.preloadImages();
         this.updateImage();
         this.startMusic();
         this.startTypewriter();
     }
-    
+
+    preloadImages() {
+        // Collect all unique image paths from all slide arrays
+        const allSlides = [
+            ...this.slidesVictory,
+            ...this.slidesDefeat,
+            ...this.slidesIntro
+        ];
+
+        const uniqueImages = [...new Set(allSlides.map(slide => slide.image))];
+
+        // Preload each image
+        uniqueImages.forEach(imagePath => {
+            const img = new Image();
+            img.src = imagePath;
+            this.preloadedImages.set(imagePath, img);
+        });
+    }
+
     slideshowKeydown(e) {
         if (e.code === 'Space') {
             e.preventDefault(); // Prevent page scrolling
@@ -170,7 +190,16 @@ class Slideshow {
     }
     
     updateImage() {
-        this.viewport.src = this.slidesCurrent[this.currentIndex].image;
+        const imagePath = this.slidesCurrent[this.currentIndex].image;
+        const preloadedImg = this.preloadedImages.get(imagePath);
+
+        if (preloadedImg && preloadedImg.complete) {
+            // Use the preloaded image
+            this.viewport.src = preloadedImg.src;
+        } else {
+            // Fallback to direct loading (shouldn't happen if preloading worked)
+            this.viewport.src = imagePath;
+        }
     }
     
     startTypewriter(text) {
