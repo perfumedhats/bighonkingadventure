@@ -18,7 +18,7 @@ class AdventureGame {
         // Blaster system
         this.blasters = [];
         this.lastMoveDirection = { x: 1, y: 0 }; // Track last movement direction
-        this.BLASTER_SPEED = 5; // Pixels per frame at 30fps (150 pixels/second)
+        this.BLASTER_SPEED = 10; // Pixels per frame at 30fps (150 pixels/second)
         this.BLASTER_SIZE = 10;
         
         // Alien system
@@ -129,8 +129,7 @@ class AdventureGame {
         
         // Create Doug Bar if it doesn't exist for this room and passes probability check
         if (!this.dougBars.hasOwnProperty(roomKey)) {
-            // 1/3 chance of having a Doug Bar
-            if (Math.random() < 1/3) {
+            if (Math.random() < .5) {
                 this.dougBars[roomKey] = createDougBarForRoom(roomKey, this.ROOM_SIZE, this.WALL_THICKNESS);
             } else {
                 this.dougBars[roomKey] = null;

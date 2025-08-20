@@ -22,17 +22,17 @@ class Alien {
         switch(this.type) {
             case 'bat':
                 this.color = '#8000FF'; // Purple
-                this.speed = 1.5; // 45 pixels/second at 30fps
+                this.speed = 7;
                 this.size = 12;
                 break;
             case 'dragon':
                 this.color = '#FF0000'; // Red
-                this.speed = 0.8; // 24 pixels/second at 30fps
+                this.speed = 4;
                 this.size = 20;
                 break;
             case 'snake':
                 this.color = '#00FF00'; // Green
-                this.speed = 1.2; // 36 pixels/second at 30fps
+                this.speed = 2;
                 this.size = 14;
                 break;
         }
