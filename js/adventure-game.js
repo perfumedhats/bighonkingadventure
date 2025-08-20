@@ -1,6 +1,7 @@
 // Atari Adventure Game
 class AdventureGame {
-    constructor() {
+    constructor(slideshow) {
+        this.slideshow = slideshow;
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         
@@ -29,6 +30,11 @@ class AdventureGame {
         this.dougBars = {}; // Store doug bars by room key
         this.currentRoomDougBar = null;
         
+        // Warp Core system
+        this.warpCore = null;
+        this.currentRoomWarpCore = null;
+        this.gameOver = false;
+        
         // Score system
         this.score = 0;
         
@@ -45,6 +51,9 @@ class AdventureGame {
         
         // Handle window resize
         this.setupResize();
+        
+        // Initialize warp core in a random exterior room
+        this.initializeWarpCore();
         
         // Initialize current room alien and Doug Bar
         this.loadCurrentRoomAlien();
@@ -72,8 +81,8 @@ class AdventureGame {
         }
         
         // Generate a maze-like structure with some randomness
-        for (let y = 0; y < 10; y++) {
-            for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 5; y++) {
+            for (let x = 0; x < 5; x++) {
                 const roomKey = `${x},${y}`;
                 
                 // Check each direction
@@ -137,6 +146,41 @@ class AdventureGame {
         }
         
         this.currentRoomDougBar = this.dougBars[roomKey];
+    }
+    
+    initializeWarpCore() {
+        // Randomly choose between (4,2) and (2,4) for warp core location
+        const warpCoreLocations = ['4,2', '2,4'];
+        const chosenLocation = warpCoreLocations[Math.floor(Math.random() * warpCoreLocations.length)];
+        this.warpCore = createWarpCore(chosenLocation, this.ROOM_SIZE, this.WALL_THICKNESS);
+    }
+    
+    loadCurrentRoomWarpCore() {
+        const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
+        this.currentRoomWarpCore = (this.warpCore && this.warpCore.roomKey === roomKey) ? this.warpCore : null;
+    }
+    
+    updateWarpCore() {
+        if (this.currentRoomWarpCore && !this.currentRoomWarpCore.destroyed) {
+            // Check collision with blasters
+            for (let i = this.blasters.length - 1; i >= 0; i--) {
+                const blaster = this.blasters[i];
+                if (this.currentRoomWarpCore.checkCollision(blaster.x, blaster.y, this.BLASTER_SIZE)) {
+                    // Destroy warp core and end game
+                    this.blasters.splice(i, 1);
+                    this.currentRoomWarpCore.destroyed = true;
+                    this.gameOver = true;
+                    this.score += 1000; // Big points for destroying the warp core
+                    this.soundManager.play('warpCoreDestroy');
+                    
+                    // Start victory sequence after 2 seconds
+                    setTimeout(() => {
+                        this.slideshow.startVictorySequence();
+                    }, 2000);
+                    break;
+                }
+            }
+        }
     }
     
     updateDougBars() {
@@ -217,7 +261,7 @@ class AdventureGame {
     }
     
     updatePlayer() {
-        const moveIncrement = 4;
+        const moveIncrement = 20; // set this back to 5
         let deltaX = 0;
         let deltaY = 0;
         
@@ -389,10 +433,11 @@ class AdventureGame {
             this.playerY = this.WALL_THICKNESS + this.PLAYER_SIZE/2;
         }
         
-        // If room changed, load the alien and Doug Bar for the new room
+        // If room changed, load the alien, Doug Bar, and warp core for the new room
         if (oldRoomX !== this.playerRoom.x || oldRoomY !== this.playerRoom.y) {
             this.loadCurrentRoomAlien();
             this.loadCurrentRoomDougBar();
+            this.loadCurrentRoomWarpCore();
         }
     }
     
@@ -409,6 +454,11 @@ class AdventureGame {
         
         // Draw walls
         this.drawWalls(roomKey, roomColor);
+        
+        // Draw warp core
+        if (this.currentRoomWarpCore) {
+            this.currentRoomWarpCore.draw(this.ctx);
+        }
         
         // Draw Doug Bar
         if (this.currentRoomDougBar && !this.currentRoomDougBar.collected) {
@@ -504,10 +554,13 @@ class AdventureGame {
         
         // Update at fixed timestep (30 FPS)
         while (this.accumulator >= this.frameTime) {
-            this.updatePlayer();
-            this.updateBlasters();
-            this.updateAliens();
-            this.updateDougBars();
+            if (!this.gameOver) {
+                this.updatePlayer();
+                this.updateBlasters();
+                this.updateAliens();
+                this.updateDougBars();
+                this.updateWarpCore();
+            }
             this.accumulator -= this.frameTime;
         }
         

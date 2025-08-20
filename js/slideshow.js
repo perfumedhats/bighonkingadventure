@@ -1,6 +1,11 @@
 // Slideshow system
 class Slideshow {
     constructor() {
+        this.slidesVictory = [{
+            image: 'images/fighter-bob.png',
+            text: 'BOB: WAY TO KICK ASS, DOUG!'
+        }];
+        
         this.slides = [{
             image: 'images/title.png',
             text: 'PRESS SPACE TO START'
@@ -140,6 +145,28 @@ class Slideshow {
         this.gameCanvas.style.display = 'block';
         
         // Start the game
-        new AdventureGame();
+        new AdventureGame(this);
+    }
+    
+    startVictorySequence() {
+        // Switch to victory slides
+        this.slides = this.slidesVictory;
+        this.currentIndex = 0;
+        
+        // Show slideshow and hide game
+        this.openingSlideshow.style.display = 'block';
+        this.gameCanvas.style.display = 'none';
+        
+        // Reset and start the slideshow
+        this.updateImage();
+        this.startTypewriter();
+        
+        // Restart background music after 2 seconds
+        setTimeout(() => {
+            this.startMusic();
+        }, 2000);
+        
+        // Re-enable input for victory slides
+        document.addEventListener('keydown', this.boundSlideshowKeydown);
     }
 }

@@ -8,7 +8,8 @@ class SoundManager {
         this.soundEffects = {
             dougBarCollect: 'sounds/doug-bar.mp3',
             gunFire: 'sounds/gun.mp3',
-            alienDeath: 'sounds/short-explosion.mp3'
+            alienDeath: 'sounds/short-explosion.mp3',
+            warpCoreDestroy: 'sounds/long-explosion.mp3'
         };
         
         // Preload all sounds
