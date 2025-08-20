@@ -63,7 +63,10 @@ class Slideshow {
         this.slidesIntro = [
             {
                 image: 'images/title.png',
-                text: 'PRESS SPACE TO START'
+                text: [
+                    'WASD TO MOVE, SPACE TO FIRE',
+                    'PRESS SPACE TO START'
+                ].join('\n')
             },
             {
                 image: 'images/fighter-bob.png',
