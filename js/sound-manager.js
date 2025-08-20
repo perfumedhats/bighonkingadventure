@@ -7,10 +7,8 @@ class SoundManager {
         // Define available sound effects
         this.soundEffects = {
             dougBarCollect: 'sounds/doug-bar.mp3',
-            // Add more sound effects here as needed:
-            // alienDeath: 'sounds/alien-death.mp3',
-            // playerHit: 'sounds/player-hit.mp3',
-            // etc...
+            gunFire: 'sounds/gun.mp3',
+            alienDeath: 'sounds/short-explosion.mp3'
         };
         
         // Preload all sounds

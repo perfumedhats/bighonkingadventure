@@ -171,6 +171,7 @@ class AdventureGame {
                     this.currentRoomAlien = null;
                     delete this.aliens[`${this.playerRoom.x},${this.playerRoom.y}`];
                     this.score += 50;
+                    this.soundManager.play('alienDeath');
                     break;
                 }
             }
@@ -263,6 +264,7 @@ class AdventureGame {
         };
         
         this.blasters.push(blaster);
+        this.soundManager.play('gunFire');
     }
     
     updateBlasters() {
