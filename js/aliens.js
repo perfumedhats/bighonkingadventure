@@ -22,7 +22,7 @@ class Alien {
         switch(this.type) {
             case 'bat':
                 this.color = '#8000FF'; // Purple
-                this.speed = 7;
+                this.speed = 9;
                 this.size = 12;
                 break;
             case 'dragon':
@@ -50,13 +50,45 @@ class Alien {
         this.direction = directions[Math.floor(Math.random() * directions.length)];
     }
     
-    update(roomSize, wallThickness) {
-        // Change direction periodically
-        this.changeDirectionTimer++;
-        if (this.changeDirectionTimer >= this.changeDirectionInterval) {
-            this.setRandomDirection();
-            this.changeDirectionTimer = 0;
-            this.changeDirectionInterval = 30 + Math.random() * 60; // 1-3 seconds at 30fps
+    update(roomSize, wallThickness, playerX, playerY) {
+        const margin = this.size / 2;
+
+        if (this.type === 'dragon') {
+            // Red dragons move toward player using 8-directional movement
+            const dx = playerX - this.x;
+            const dy = playerY - this.y;
+            
+            // Add a small threshold to prevent tiny movements
+            const threshold = 2;
+            
+            // Calculate normalized direction with diagonal adjustment
+            const length = Math.sqrt(dx * dx + dy * dy);
+            if (length > threshold) {
+                // Normalize to 8 directions
+                const normalizedDx = dx / length;
+                const normalizedDy = dy / length;
+                
+                // Convert to -1, 0, or 1 based on 45-degree angles
+                this.direction.x = Math.abs(normalizedDx) > 0.382 ? Math.sign(dx) : 0;
+                this.direction.y = Math.abs(normalizedDy) > 0.382 ? Math.sign(dy) : 0;
+                
+                // If we're not moving in either direction, force the dominant one
+                if (this.direction.x === 0 && this.direction.y === 0) {
+                    if (Math.abs(dx) > Math.abs(dy)) {
+                        this.direction.x = Math.sign(dx);
+                    } else {
+                        this.direction.y = Math.sign(dy);
+                    }
+                }
+            }
+        } else {
+            // Other aliens use original random movement
+            this.changeDirectionTimer++;
+            if (this.changeDirectionTimer >= this.changeDirectionInterval) {
+                this.setRandomDirection();
+                this.changeDirectionTimer = 0;
+                this.changeDirectionInterval = 30 + Math.random() * 60; // 1-3 seconds at 30fps
+            }
         }
         
         // Move alien
@@ -64,7 +96,6 @@ class Alien {
         const newY = this.y + this.direction.y * this.speed;
         
         // Check boundaries and bounce off walls
-        const margin = this.size / 2;
         if (newX < wallThickness + margin || newX > roomSize - wallThickness - margin) {
             this.direction.x *= -1;
         } else {

@@ -216,7 +216,7 @@ class AdventureGame {
     
     updateAliens() {
         if (this.currentRoomAlien) {
-            this.currentRoomAlien.update(this.ROOM_SIZE, this.WALL_THICKNESS);
+            this.currentRoomAlien.update(this.ROOM_SIZE, this.WALL_THICKNESS, this.playerX, this.playerY);
             
             // Check collision with player
             if (this.currentRoomAlien.checkCollision(this.playerX, this.playerY, this.PLAYER_SIZE, true)) {
@@ -468,7 +468,8 @@ class AdventureGame {
     
     drawRoom() {
         const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
-        const roomIndex = (this.playerRoom.x + this.playerRoom.y * 10) % AtariColors.length;
+        // Add 5 to skip the basic colors and get more interesting ones
+        const roomIndex = (this.playerRoom.x + this.playerRoom.y * 10 + 5) % AtariColors.length;
         const roomColor = AtariColors[roomIndex];
         
         // Fill room with grey background
