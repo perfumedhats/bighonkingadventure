@@ -101,7 +101,7 @@ class Slideshow {
                 ].join('\n')
             },
             {
-                image: 'images/fighter-bob2.png',
+                image: 'images/fighter-bob.png',
                 text: [
                     "BOB: CAREFUL DOUG, THAT THING HITS",
                     "LIKE A LOADED GOAT"
@@ -116,7 +116,7 @@ class Slideshow {
                 ].join('\n')
             }
         ];
-        this.slidesCurrent = [this.slidesIntro[0]];
+        this.slidesCurrent = this.slidesIntro;
         this.writingText = true;
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');
