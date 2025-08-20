@@ -147,11 +147,13 @@ class Alien {
         }
     }
     
-    checkCollision(otherX, otherY, otherSize) {
+    checkCollision(otherX, otherY, otherSize, isPlayer = false) {
         const dx = this.x - otherX;
         const dy = this.y - otherY;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        return distance < (this.size + otherSize) / 2;
+        // Use 50% larger hit box for player collisions
+        const hitBoxMultiplier = isPlayer ? 1.5 : 1;
+        return distance < (this.size + otherSize) * hitBoxMultiplier / 2;
     }
 }
 

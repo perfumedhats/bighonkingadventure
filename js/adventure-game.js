@@ -171,6 +171,16 @@ class AdventureGame {
         }, 2000);
     }
     
+    triggerDefeat() {
+        this.gameOver = true;
+        this.soundManager.play('alienDeath'); // Reuse alien death sound for now
+        
+        // Start defeat sequence after 1 second
+        setTimeout(() => {
+            this.slideshow.startDefeatSequence();
+        }, 1000);
+    }
+    
     updateWarpCore() {
         if (this.currentRoomWarpCore && !this.currentRoomWarpCore.destroyed) {
             // Check collision with blasters
@@ -203,10 +213,8 @@ class AdventureGame {
             this.currentRoomAlien.update(this.ROOM_SIZE, this.WALL_THICKNESS);
             
             // Check collision with player
-            if (this.currentRoomAlien.checkCollision(this.playerX, this.playerY, this.PLAYER_SIZE)) {
-                // Reset player to center of room (or handle damage)
-                this.playerX = this.ROOM_SIZE / 2;
-                this.playerY = this.ROOM_SIZE / 2;
+            if (this.currentRoomAlien.checkCollision(this.playerX, this.playerY, this.PLAYER_SIZE, true)) {
+                this.triggerDefeat();
             }
             
             // Check collision with blasters
@@ -270,7 +278,7 @@ class AdventureGame {
     }
     
     updatePlayer() {
-        const moveIncrement = 20; // set this back to 5
+        const moveIncrement = 10;
         let deltaX = 0;
         let deltaY = 0;
         

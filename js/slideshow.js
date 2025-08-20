@@ -1,7 +1,7 @@
 // Slideshow system
 class Slideshow {
     constructor() {
-        this.isVictoryMode = false;
+        this.isFinale = false;
         this.slidesVictory = [
             {
                 image: 'images/fighter-bob.png',
@@ -21,6 +21,42 @@ class Slideshow {
                     "WOOF! WOOF! WOOF!"
                 ].join('\n')
             },
+            {
+                image: 'images/doug-relaxed.png',
+                text: [
+                    "DOUG: THAT SURE WAS A BIG HONKING",
+                    "ADVENTURE"
+                ].join('\n')
+            },
+            {
+                image: 'images/alien-defeat.png',
+                text: [
+                    "THE END... OR IS IT?"
+                ].join('\n')
+            }
+        ];
+
+        this.slidesDefeat = [
+            {
+                image: 'images/admiral3.png',
+                text: [
+                    "ADMIRAL: WITHOUT DOUG, HUMANITY",
+                    "CANNOT DEFEAT THE ALIENS!"
+                ].join('\n')
+            },
+            {
+                image: 'images/bad-ending.png',
+                text: [
+                    "ALIENS: KLATU BARADA NIKTO*",
+                    "TRANSLATION: THE HUMANS ARE DELICIOUS"
+                ].join('\n')
+            },
+            {
+                image: 'images/alien-victory.png',
+                text: [
+                    "THE END... OR IS IT?"
+                ].join('\n')
+            }
         ];
         
         this.slidesIntro = [
@@ -53,8 +89,8 @@ class Slideshow {
             {
                 image: 'images/doug-bar.png',
                 text: [
-                    'YOU CAN RECOVER HEALTH BY EATING',
-                    'DELICIOUS DOUG BARS'
+                    'EAT ALL THE DELICIOUS DOUG BARS',
+                    'YOU CAN FIND'
                 ].join('\n')
             },
             {
@@ -65,10 +101,18 @@ class Slideshow {
                 ].join('\n')
             },
             {
-                image: 'images/fighter-bob-2.png',
+                image: 'images/fighter-bob2.png',
                 text: [
                     "BOB: CAREFUL DOUG, THAT THING HITS",
                     "LIKE A LOADED GOAT"
+                ].join('\n')
+            },
+            {
+                image: 'images/doug-pilot.png',
+                text: [
+                    "DOUG: NO SWEAT! I'M HERE TO KICK ASS",
+                    "AND CHEW DOUG BARS, AND I'M ALL OUT",
+                    "OF DOUG BARS"
                 ].join('\n')
             }
         ];
@@ -111,7 +155,7 @@ class Slideshow {
         this.currentIndex++;
         
         if (this.currentIndex >= this.slidesCurrent.length) {
-            if (!this.isVictoryMode) {
+            if (!this.isFinale) {
                 // Start the game only if not in victory mode
                 this.startGame();
                 document.removeEventListener('keydown', this.boundSlideshowKeydown);
@@ -176,8 +220,36 @@ class Slideshow {
         this.writingText = true;
         this.currentIndex = 0;
 
-        this.isVictoryMode = true;
+        this.isFinale = true;
         this.slidesCurrent = this.slidesVictory;
+
+        // Hide game canvas first
+        this.gameCanvas.style.display = 'none';
+        
+        // Set up victory slide
+        this.updateImage();
+        // Show slideshow after image is loaded to prevent flicker
+        this.viewport.onload = () => {
+            this.openingSlideshow.style.display = 'block';
+            this.startTypewriter(this.slidesCurrent[0].text);
+            this.viewport.onload = null;
+        };
+        
+        // Restart background music after 2 seconds
+        setTimeout(() => {
+            this.startMusic();
+        }, 2000);
+        
+        // Re-enable input for victory slides
+        document.addEventListener('keydown', this.boundSlideshowKeydown);
+    }
+
+    startDefeatSequence() {
+        this.writingText = true;
+        this.currentIndex = 0;
+
+        this.isFinale = true;
+        this.slidesCurrent = this.slidesDefeat;
 
         // Hide game canvas first
         this.gameCanvas.style.display = 'none';
