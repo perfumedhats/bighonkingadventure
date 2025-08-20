@@ -160,6 +160,17 @@ class AdventureGame {
         this.currentRoomWarpCore = (this.warpCore && this.warpCore.roomKey === roomKey) ? this.warpCore : null;
     }
     
+    triggerVictory() {
+        this.gameOver = true;
+        this.score += 1000; // Big points for destroying the warp core
+        this.soundManager.play('warpCoreDestroy');
+        
+        // Start victory sequence after 2 seconds
+        setTimeout(() => {
+            this.slideshow.startVictorySequence();
+        }, 2000);
+    }
+    
     updateWarpCore() {
         if (this.currentRoomWarpCore && !this.currentRoomWarpCore.destroyed) {
             // Check collision with blasters
@@ -169,14 +180,7 @@ class AdventureGame {
                     // Destroy warp core and end game
                     this.blasters.splice(i, 1);
                     this.currentRoomWarpCore.destroyed = true;
-                    this.gameOver = true;
-                    this.score += 1000; // Big points for destroying the warp core
-                    this.soundManager.play('warpCoreDestroy');
-                    
-                    // Start victory sequence after 2 seconds
-                    setTimeout(() => {
-                        this.slideshow.startVictorySequence();
-                    }, 2000);
+                    this.triggerVictory();
                     break;
                 }
             }
@@ -231,6 +235,11 @@ class AdventureGame {
             if (e.code === 'Space') {
                 e.preventDefault(); // Prevent page scrolling
                 this.fireBlaster();
+            }
+            
+            // Victory sequence hotkey
+            if (e.key.toLowerCase() === 'v' && !this.gameOver) {
+                this.triggerVictory();
             }
         });
         

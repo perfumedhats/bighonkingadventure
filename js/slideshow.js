@@ -1,60 +1,78 @@
 // Slideshow system
 class Slideshow {
     constructor() {
-        this.slidesVictory = [{
-            image: 'images/fighter-bob.png',
-            text: 'BOB: WAY TO KICK ASS, DOUG!'
-        }];
+        this.isVictoryMode = false;
+        this.slidesVictory = [
+            {
+                image: 'images/fighter-bob.png',
+                text: 'BOB: WAY TO KICK ASS, DOUG!'
+            },
+            {
+                image: 'images/heather.png',
+                text: [
+                    'HEATHER: THANKS, YOU SAVED THE FAIRY',
+                    'GARDEN FROM THE ALIENS!'
+                ].join('\n')
+            },
+            {
+                image: 'images/admiral3.png',
+                text: [
+                    "ADMIRAL: THREE CHEERS FOR DOUG!",
+                    "WOOF! WOOF! WOOF!"
+                ].join('\n')
+            },
+        ];
         
-        this.slides = [{
-            image: 'images/title.png',
-            text: 'PRESS SPACE TO START'
-        },
-        {
-            image: 'images/fighter-bob.png',
-            text: [
-                'BOB: HOLY SHIT DOUG, THERE\'S ALIENS',
-                'ATTACKING EARTH!'
-            ].join('\n')
-        },
-        {
-            image: 'images/admiral2.png',
-            text: [
-                'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE',
-                'PILOT IN ORBIT! YOU MUST LAND ON THE',
-                'ENEMY SHIP AND DISABLE THEIR WARP CORE'
-            ].join('\n')
-        },
-        {
-            image: 'images/aliens.png',
-            text: [
-                "BE CAREFUL DOUG, THESE ALIENS",
-                "ARE AS DEADLY AS THEY ARE UGLY"
-            ].join('\n')
-        },
-        {
-            image: 'images/doug-bar.png',
-            text: [
-                'YOU CAN RECOVER HEALTH BY EATING',
-                'DELICIOUS DOUG BARS'
-            ].join('\n')
-        },
-        {
-            image: 'images/big-honking-gun.png',
-            text: [
-                "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
-                "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
-            ].join('\n')
-        },
-        {
-            image: 'images/fighter-bob-2.png',
-            text: [
-                "BOB: CAREFUL DOUG, THAT THING HITS",
-                "LIKE A LOADED GOAT"
-            ].join('\n')
-        }
-    ];
-        this.slides = [this.slides[0]];
+        this.slidesIntro = [
+            {
+                image: 'images/title.png',
+                text: 'PRESS SPACE TO START'
+            },
+            {
+                image: 'images/fighter-bob.png',
+                text: [
+                    'BOB: HOLY SHIT DOUG, THERE\'S ALIENS',
+                    'ATTACKING EARTH!'
+                ].join('\n')
+            },
+            {
+                image: 'images/admiral2.png',
+                text: [
+                    'ADMIRAL: DOUG, YOU ARE THE ONLY SPACE',
+                    'PILOT IN ORBIT! YOU MUST LAND ON THE',
+                    'ENEMY SHIP AND DISABLE THEIR WARP CORE'
+                ].join('\n')
+            },
+            {
+                image: 'images/aliens.png',
+                text: [
+                    "BE CAREFUL DOUG, THESE ALIENS",
+                    "ARE AS DEADLY AS THEY ARE UGLY"
+                ].join('\n')
+            },
+            {
+                image: 'images/doug-bar.png',
+                text: [
+                    'YOU CAN RECOVER HEALTH BY EATING',
+                    'DELICIOUS DOUG BARS'
+                ].join('\n')
+            },
+            {
+                image: 'images/big-honking-gun.png',
+                text: [
+                    "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
+                    "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
+                ].join('\n')
+            },
+            {
+                image: 'images/fighter-bob-2.png',
+                text: [
+                    "BOB: CAREFUL DOUG, THAT THING HITS",
+                    "LIKE A LOADED GOAT"
+                ].join('\n')
+            }
+        ];
+        this.slidesCurrent = [this.slidesIntro[0]];
         this.writingText = true;
         this.currentIndex = 0;
         this.viewport = document.getElementById('viewport');
@@ -92,10 +110,15 @@ class Slideshow {
 
         this.currentIndex++;
         
-        if (this.currentIndex >= this.slides.length) {
-            // Start the game
-            this.startGame();
-            document.removeEventListener('keydown', this.boundSlideshowKeydown);
+        if (this.currentIndex >= this.slidesCurrent.length) {
+            if (!this.isVictoryMode) {
+                // Start the game only if not in victory mode
+                this.startGame();
+                document.removeEventListener('keydown', this.boundSlideshowKeydown);
+            } else {
+                // In victory mode, stay on last slide
+                this.currentIndex--;
+            }
         } else {
             this.updateImage();
             this.startTypewriter();
@@ -103,12 +126,13 @@ class Slideshow {
     }
     
     updateImage() {
-        this.viewport.src = this.slides[this.currentIndex].image;
+        this.viewport.src = this.slidesCurrent[this.currentIndex].image;
     }
     
-    startTypewriter() {
+    startTypewriter(text) {
         this.typewriterText.innerHTML = '';
-        this.typeText(this.slides[this.currentIndex].text, 0);
+        const textToType = text || this.slidesCurrent[this.currentIndex].text;
+        this.typeText(textToType, 0);
     }
     
     typeText(text, index) {
@@ -149,17 +173,23 @@ class Slideshow {
     }
     
     startVictorySequence() {
-        // Switch to victory slides
-        this.slides = this.slidesVictory;
+        this.writingText = true;
         this.currentIndex = 0;
-        
-        // Show slideshow and hide game
-        this.openingSlideshow.style.display = 'block';
+
+        this.isVictoryMode = true;
+        this.slidesCurrent = this.slidesVictory;
+
+        // Hide game canvas first
         this.gameCanvas.style.display = 'none';
         
-        // Reset and start the slideshow
+        // Set up victory slide
         this.updateImage();
-        this.startTypewriter();
+        // Show slideshow after image is loaded to prevent flicker
+        this.viewport.onload = () => {
+            this.openingSlideshow.style.display = 'block';
+            this.startTypewriter(this.slidesCurrent[0].text);
+            this.viewport.onload = null;
+        };
         
         // Restart background music after 2 seconds
         setTimeout(() => {
