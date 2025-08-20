@@ -30,12 +30,13 @@ class DougBar {
     }
 
     checkCollision(playerX, playerY, playerSize) {
-        // Simple rectangular collision detection
+        // Use a larger collision box (50% bigger than the actual bar)
+        const collisionMargin = 15; // Half the bar width
         return !this.collected &&
-            playerX < (this.x + this.width) &&
-            (playerX + playerSize) > this.x &&
-            playerY < (this.y + this.height) &&
-            (playerY + playerSize) > this.y;
+            playerX < (this.x + this.width + collisionMargin) &&
+            (playerX + playerSize) > (this.x - collisionMargin) &&
+            playerY < (this.y + this.height + collisionMargin) &&
+            (playerY + playerSize) > (this.y - collisionMargin);
     }
 }
 

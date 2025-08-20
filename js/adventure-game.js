@@ -124,12 +124,18 @@ class AdventureGame {
     
     loadCurrentRoomAlien() {
         const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
-        
+
+        // Don't create aliens in the starting room (0,0)
+        if (roomKey === '0,0') {
+            this.currentRoomAlien = null;
+            return;
+        }
+
         // Create alien if it doesn't exist for this room
         if (!this.aliens[roomKey]) {
             this.aliens[roomKey] = createAlienForRoom(roomKey, this.ROOM_SIZE, this.WALL_THICKNESS);
         }
-        
+
         this.currentRoomAlien = this.aliens[roomKey];
     }
     

@@ -65,7 +65,8 @@ class Slideshow {
                 image: 'images/title.png',
                 text: [
                     'WASD TO MOVE, SPACE TO FIRE',
-                    'PRESS SPACE TO START'
+                    'SPACE TO START',
+                    'S TO SKIP'
                 ].join('\n')
             },
             {
@@ -162,6 +163,9 @@ class Slideshow {
         if (e.code === 'Space') {
             e.preventDefault(); // Prevent page scrolling
             this.nextImage();
+        } else if (e.key.toLowerCase() === 's') {
+            e.preventDefault(); // Prevent page scrolling
+            this.skipToGame();
         }
     }
     
@@ -170,13 +174,21 @@ class Slideshow {
         document.addEventListener('keydown', this.boundSlideshowKeydown);
     }
 
+    skipToGame() {
+        // Only allow skipping during intro slideshow
+        if (!this.isFinale) {
+            this.startGame();
+            document.removeEventListener('keydown', this.boundSlideshowKeydown);
+        }
+    }
+
     nextImage() {
         if (this.writingText) {
             return;
         }
 
         this.currentIndex++;
-        
+
         if (this.currentIndex >= this.slidesCurrent.length) {
             if (!this.isFinale) {
                 // Start the game only if not in victory mode
