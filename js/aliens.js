@@ -39,15 +39,26 @@ class Alien {
     }
     
     setRandomDirection() {
-        const directions = [
-            { x: 0, y: -1 }, // North
-            { x: 1, y: 0 },  // East
-            { x: 0, y: 1 },  // South
-            { x: -1, y: 0 }, // West
-            { x: 0, y: 0 }   // Stop occasionally
-        ];
-        
-        this.direction = directions[Math.floor(Math.random() * directions.length)];
+        if (this.type === 'snake') {
+            // Snakes only move diagonally
+            const diagonalDirections = [
+                { x: 1, y: 1 },   // Southeast
+                { x: -1, y: 1 },  // Southwest
+                { x: 1, y: -1 },  // Northeast
+                { x: -1, y: -1 }, // Northwest
+            ];
+            this.direction = diagonalDirections[Math.floor(Math.random() * diagonalDirections.length)];
+        } else {
+            // Other aliens use cardinal directions
+            const directions = [
+                { x: 0, y: -1 }, // North
+                { x: 1, y: 0 },  // East
+                { x: 0, y: 1 },  // South
+                { x: -1, y: 0 }, // West
+                { x: 0, y: 0 }   // Stop occasionally
+            ];
+            this.direction = directions[Math.floor(Math.random() * directions.length)];
+        }
     }
     
     update(roomSize, wallThickness, playerX, playerY) {

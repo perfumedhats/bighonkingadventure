@@ -468,8 +468,8 @@ class AdventureGame {
     
     drawRoom() {
         const roomKey = `${this.playerRoom.x},${this.playerRoom.y}`;
-        // Add 5 to skip the basic colors and get more interesting ones
-        const roomIndex = (this.playerRoom.x + this.playerRoom.y * 10 + 5) % AtariColors.length;
+        // Add 14 to make the starting room brown
+        const roomIndex = (this.playerRoom.x + this.playerRoom.y * 10 + 14) % AtariColors.length;
         const roomColor = AtariColors[roomIndex];
         
         // Fill room with grey background
