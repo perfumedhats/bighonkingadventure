@@ -130,6 +130,8 @@ class Slideshow {
         this.gameContainer = document.getElementById('game-container');
         this.backgroundMusic = document.getElementById('background-music');
         this.typewriterText = document.getElementById('typewriter-text');
+        this.loadingOverlay = document.getElementById('loading-overlay');
+        this.loadingText = document.getElementById('loading-text');
         
         // Bind the event handler once and store it
         this.boundSlideshowKeydown = this.slideshowKeydown.bind(this);
@@ -151,12 +153,43 @@ class Slideshow {
 
         const uniqueImages = [...new Set(allSlides.map(slide => slide.image))];
 
-        // Preload each image
+        // Show loading overlay
+        this.loadingOverlay.style.display = 'flex';
+
+        // Initialize loading tracking
+        this.totalImages = uniqueImages.length;
+        this.loadedImages = 0;
+
+        // Preload each image with progress tracking
         uniqueImages.forEach(imagePath => {
             const img = new Image();
             img.src = imagePath;
+
+            // Track loading progress
+            img.addEventListener('load', () => {
+                this.loadedImages++;
+                this.updateLoadingProgress();
+            });
+
+            img.addEventListener('error', () => {
+                this.loadedImages++;
+                this.updateLoadingProgress();
+            });
+
             this.preloadedImages.set(imagePath, img);
         });
+    }
+
+    updateLoadingProgress() {
+        const percentage = Math.round((this.loadedImages / this.totalImages) * 100);
+        this.loadingText.textContent = `LOADING... ${percentage}%`;
+
+        // Hide loading overlay when all images are loaded
+        if (this.loadedImages >= this.totalImages) {
+            setTimeout(() => {
+                this.loadingOverlay.style.display = 'none';
+            }, 500); // Small delay to show 100%
+        }
     }
 
     slideshowKeydown(e) {
