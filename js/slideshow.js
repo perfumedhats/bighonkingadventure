@@ -102,7 +102,7 @@ class Slideshow {
                 image: 'images/big-honking-gun.png',
                 text: [
                     "YOU'VE ALSO GOT THE ONLY BIG HONKIN",
-                    "GUN THAT KEVIN HUGES HASN'T STEPPED ON"
+                    "GUN THAT KEVIN HUGHES HASN'T STEPPED ON"
                 ].join('\n')
             },
             {
@@ -132,11 +132,10 @@ class Slideshow {
         this.typewriterText = document.getElementById('typewriter-text');
         this.loadingOverlay = document.getElementById('loading-overlay');
         this.loadingText = document.getElementById('loading-text');
-        
+
         // Bind the event handler once and store it
         this.boundSlideshowKeydown = this.slideshowKeydown.bind(this);
-        
-        this.setupInput();
+
         this.preloadImages();
         this.updateImage();
         this.startMusic();
@@ -188,6 +187,7 @@ class Slideshow {
         if (this.loadedImages >= this.totalImages) {
             setTimeout(() => {
                 this.loadingOverlay.style.display = 'none';
+                this.setupInput();
             }, 500); // Small delay to show 100%
         }
     }
