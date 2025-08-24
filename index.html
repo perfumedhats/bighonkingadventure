@@ -39,13 +39,12 @@
             position: absolute;
             white-space: pre-wrap;
             top: 100%;
-            left: 50%;
-            transform: translateX(-488px) translateY(-120px);
+            margin-left: 20px;
+            transform: translateY(-120px);
             color: #fff;
             font-family: 'Press Start 2P', cursive;
-            font-size: 25px;
+            font-size: clamp(14px, 2vw, 20px);
             text-shadow: 2px 2px 4px rgba(0,0,0,1);
-            width: 980px;
             line-height: 1.4;
         }
         
@@ -67,9 +66,9 @@
 <body>
     <!-- The canvas starts hidden and is shown when the game is loaded -->
     <div id="game-container">
-        <div id="opening-slideshow">
-            <img id="viewport"src="images/title.png" alt="Loading..." style="width: 100%; height: 100%; object-fit: cover;">
+        <div id="opening-slideshow" style="max-width: 100vw; max-height: 100vh">
             <div id="typewriter-text" class="typewriter-text"></div>
+            <img id="viewport" src="images/title.png" style="max-width: 100vw; max-height: 100vh; height: auto; width: auto">
         </div>       
         <canvas id="gameCanvas" style="display: none;"></canvas>
         
